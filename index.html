@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Dars Jadvali (5-11 sinflar)</title>
+    <!-- Telegram Web App kutubxonasi -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #f4f4f5);
+            --text-color: var(--tg-theme-text-color, #222222);
+            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+            --button-color: var(--tg-theme-button-color, #2481cc);
+            --button-text: var(--tg-theme-button-text-color, #ffffff);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+        h2 {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .grid-full {
+            grid-template-columns: 1fr;
+        }
+        button {
+            background-color: var(--button-color);
+            color: var(--button-text);
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        button:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+        .btn-back {
+            background-color: #e5e7eb;
+            color: #374151;
+            margin-top: 10px;
+        }
+        .schedule-box {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 1. SINFLAR MENYUSI (5-11) -->
+    <div id="screen-classes">
+        <h2>📚 Dars Jadvali (5-11 sinflar)</h2>
+        <div class="grid" id="classes-grid">
+            <!-- JavaScript orqali to'ldiriladi -->
+        </div>
+    </div>
+
+    <!-- 2. PARALLEL SINFLAR MENYUSI (A / B) -->
+    <div id="screen-parallels" class="hidden">
+        <h2 id="parallel-title">🧑‍🎓 Sinfni tanlang</h2>
+        <div class="grid grid-full" id="parallels-grid">
+            <button onclick="selectParallel('A')">🅰️ A sinf</button>
+            <button onclick="selectParallel('B')">🅱️ B sinf</button>
+        </div>
+        <button class="btn-back" onclick="showScreen('screen-classes')">⬅️ Ortga</button>
+    </div>
+
+    <!-- 3. HAFTA KUNLARI MENYUSI -->
+    <div id="screen-days" class="hidden">
+        <h2 id="days-title">🏫 Hafta kunini tanlang</h2>
+        <div class="grid" id="days-grid">
+            <button onclick="selectDay('mon')">📅 Dushanba</button>
+            <button onclick="selectDay('tue')">📅 Seshanba</button>
+            <button onclick="selectDay('wed')">📅 Chorshanba</button>
+            <button onclick="selectDay('thu')">📅 Payshanba</button>
+            <button onclick="selectDay('fri')">📅 Juma</button>
+            <button onclick="selectDay('sat')">📅 Shanba</button>
+        </div>
+        <button class="btn-back" onclick="showScreen('screen-parallels')">⬅️ Ortga</button>
+    </div>
+
+    <!-- 4. DARS JADVALini KO'RSATISH QISMI -->
+    <div id="screen-schedule" class="hidden">
+        <h2 id="schedule-title">📅 Dars jadvali</h2>
+        <div class="schedule-box" id="schedule-content">
+            <!-- Jadval matni shu yerga chiqadi -->
+        </div>
+        <button onclick="showScreen('screen-days')">⬅️ Ortga (Kunlarga)</button>
+        <button class="btn-back" onclick="showScreen('screen-classes')">🏠 Asosiy menyu</>
+    </div>
+</div>
+
+<script>
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+
+    // 8-B sinfining dars jadvali ma'lumotlari
+    const SCHEDULE_8B = {
+        "mon": "<b>📅 Dushanba (8-B):</b>\n1. 🚀 Kelajak soati\n2. 🇷🇺 Rus tili\n3. 📐 Algebra\n4. 📖 Adabiyot\n5. 🇺🇿 Ona tili\n6. 🇬🇧 Ingliz tili",
+        "tue": "<b>📅 Seshanba (8-B):</b>\n1. 🧬 Biologiya\n2. 🧪 Kimyo\n3. 🇬🇧 Ingliz tili\n4. 📊 Iqtisod\n5. 📐 Geometriya\n6. 📐 Algebra",
+        "wed": "<b>📅 Chorshanba (8-B):</b>\n1. 💻 Informatika\n2. 🏃‍♂️ Jismoniy tarbiya\n3. 📜 O'zbekiston tarixi\n4. 📖 Adabiyot\n5. 📐 Algebra\n6. 🇺🇿 Ona tili",
+        "thu": "<b>📅 Payshanba (8-B):</b>\n1. 🇷🇺 Rus tili\n2. 🇺🇿 Ona tili\n3. 📜 O'zbekiston tarixi\n4. 🛠 Texnologiya\n5. ⚛️ Fizika\n6. ⚖️ Huquq",
+        "fri": "<b>📅 Juma (8-B):</b>\n1. 🌍 Geografiya\n2. ⚛️ Fizika\n3. 🧬 Biologiya\n4. 🏃‍♂️ Jismoniy tarbiya\n5. 📐 Geometriya",
+        "sat": "<b>📅 Shanba (8-B):</b>\n1. 🌟 Tarbiya\n2. 📐 Chizmachilik\n3. 🧪 Kimyo\n4. 🗺 Jahon tarixi\n5. 🇬🇧 Ingliz tili"
+    };
+
+    let selectedClassNum = "";
+    let selectedParallelLetter = "";
+
+    // Sinflarni chiqarish (5-dan 11-gacha)
+    const classesGrid = document.getElementById("classes-grid");
+    for (let i = 5; i <= 11; i++) {
+        let btn = document.createElement("button");
+        btn.innerHTML = `🧑‍🎓 ${i}-sinf`;
+        btn.onclick = () => selectClass(i);
+        classesGrid.appendChild(btn);
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.container > div').forEach(div => div.classList.add('hidden'));
+        document.getElementById(screenId).classList.remove('hidden');
+    }
+
+    function selectClass(num) {
+        selectedClassNum = num;
+        document.getElementById("parallel-title").innerHTML = `🧑‍🎓 ${num}-sinf. Parallel sinfni tanlang:`;
+        showScreen('screen-parallels');
+    }
+
+    function selectParallel(letter) {
+        selectedParallelLetter = letter;
+        document.getElementById("days-title").innerHTML = `🏫 ${selectedClassNum}-${letter} sinfi. Hafta kunini tanlang:`;
+        showScreen('screen-days');
+    }
+
+    function selectDay(dayCode) {
+        let fullClassName = `${selectedClassNum}-${selectedParallelLetter}`;
+        let scheduleHtml = "";
+
+        if (fullClassName === "8-B") {
+            scheduleHtml = SCHEDULE_8B[dayCode];
+        } else {
+            scheduleHtml = `<b>ℹ️ ${fullClassName} sinfi uchun dars jadvali tez orada qo'shiladi (Coming Soon)!</b>`;
+        }
+
+        document.getElementById("schedule-title").innerHTML = `📅 ${fullClassName} (${getDaysName(dayCode)})`;
+        document.getElementById("schedule-content").innerHTML = scheduleHtml;
+        showScreen('screen-schedule');
+    }
+
+    function getDaysName(code) {
+        const names = { "mon": "Dushanba", "tue": "Seshanba", "wed": "Chorshanba", "thu": "Payshanba", "fri": "Juma", "sat": "Shanba" };
+        return names[code] || "";
+    }
+</script>
+
+</body>
+</html>
